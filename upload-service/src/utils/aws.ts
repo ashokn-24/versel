@@ -4,10 +4,10 @@ import path from "path";
 import mime from "mime-types";
 
 const s3 = new S3({
-  accessKeyId: "97d9a8a13964be76824283722e96811b",
+  accessKeyId: "",
   secretAccessKey:
-    "b038c1216bb4f0dacadb5b96446fceeec239cff4ba02cf95ee65be61ce6c30c6",
-  endpoint: "https://ee31c6ba934114afc276fc43ca72c95f.r2.cloudflarestorage.com",
+    "",
+  endpoint: "https://.r2.cloudflarestorage.com",
 });
 
 export const uploadFile = async (fileName: string, localFilePath: string) => {
