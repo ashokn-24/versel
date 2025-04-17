@@ -1,3 +1,5 @@
 api.rest
 .env
 /node_modules
+/dist
+/dist/repos

@@ -2,12 +2,14 @@ import { S3 } from "aws-sdk";
 import fs from "fs";
 import path from "path";
 import mime from "mime-types";
+import dotenv from 'dotenv'
+dotenv.config()
 
 const s3 = new S3({
-  accessKeyId: "",
+  accessKeyId: process.env.CLOUDFLARE_KEY,
   secretAccessKey:
-    "",
-  endpoint: "https://.r2.cloudflarestorage.com",
+    process.env.CLOUDFLARE_SECRET,
+  endpoint: process.env.CLOUDFLARE_END_POINT ,
 });
 
 export const uploadFile = async (fileName: string, localFilePath: string) => {

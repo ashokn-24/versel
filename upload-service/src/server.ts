@@ -3,8 +3,13 @@ import cors from "cors";
 import simpleGit from "simple-git";
 import { generateId } from "./utils/generateId";
 import path from "path";
-import { uploadDirectory, uploadFile } from "./utils/aws";
+import { uploadDirectory} from "./utils/aws";
+import {createClient} from 'redis';
 import fs from "fs";
+
+const publisher =  createClient();
+publisher.connect();
+
 
 const app = express();
 const git = simpleGit();
@@ -29,6 +34,10 @@ app.post("/deploy", async (req, res) => {
     console.log(`Uploadind to Cloud: ${repoPath}`);
 
     fs.rmSync(repoPath, { recursive: true, force: true });
+
+    publisher.lPush("build-que", id);
+    console.log(`Pushed to Redis Queue for Build ID: ${id}`);
+
 
     res.json({ id, message: "Uploading successful!" });
   } catch (error) {

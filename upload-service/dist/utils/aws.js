@@ -16,18 +16,23 @@ exports.uploadDirectory = exports.uploadFile = void 0;
 const aws_sdk_1 = require("aws-sdk");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
+const mime_types_1 = __importDefault(require("mime-types"));
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
 const s3 = new aws_sdk_1.S3({
-    accessKeyId: "97d9a8a13964be76824283722e96811b",
-    secretAccessKey: "b038c1216bb4f0dacadb5b96446fceeec239cff4ba02cf95ee65be61ce6c30c6",
-    endpoint: "https://ee31c6ba934114afc276fc43ca72c95f.r2.cloudflarestorage.com",
+    accessKeyId: process.env.CLOUDFLARE_KEY,
+    secretAccessKey: process.env.CLOUDFLARE_SECRET,
+    endpoint: process.env.CLOUDFLARE_END_POINT,
 });
 const uploadFile = (fileName, localFilePath) => __awaiter(void 0, void 0, void 0, function* () {
     const fileContent = fs_1.default.readFileSync(localFilePath);
+    const contentType = mime_types_1.default.lookup(localFilePath) || "application/octet-stream";
     const res = yield s3
         .upload({
         Body: fileContent,
         Bucket: "vercel",
         Key: fileName,
+        ContentType: contentType,
     })
         .promise();
     console.log(res);
@@ -39,12 +44,10 @@ const uploadDirectory = (localDirPath_1, ...args_1) => __awaiter(void 0, [localD
         const fullLocalPath = path_1.default.join(localDirPath, file);
         const stats = fs_1.default.statSync(fullLocalPath);
         if (stats.isFile()) {
-            // For files, construct the key with the directory structure
             const fileKey = bucketPath ? `${bucketPath}/${file}` : file;
             yield (0, exports.uploadFile)(fileKey, fullLocalPath);
         }
         else if (stats.isDirectory()) {
-            // For directories, recurse with updated bucket path
             const newBucketPath = bucketPath ? `${bucketPath}/${file}` : file;
             yield (0, exports.uploadDirectory)(fullLocalPath, newBucketPath);
         }
