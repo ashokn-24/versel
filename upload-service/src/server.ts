@@ -46,5 +46,5 @@ app.post("/deploy", async (req, res) => {
 });
 
 app.listen(3000, () => {
-  console.log(`Server is Listening on 3000`);
+  console.log(`Uploading server is Listening on http://localhost:3000`);
 });
