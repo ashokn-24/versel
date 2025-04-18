@@ -30,10 +30,10 @@ app.post("/deploy", async (req, res) => {
 
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    await uploadDirectory(repoPath, "newRepo");
+    await uploadDirectory(repoPath, `newRepo/${id}`);
     console.log(`Uploadind to Cloud: ${repoPath}`);
 
-    fs.rmSync(repoPath, { recursive: true, force: true });
+    // fs.rmSync(repoPath, { recursive: true, force: true });
 
     publisher.lPush("build-que", id);
     console.log(`Pushed to Redis Queue for Build ID: ${id}`);

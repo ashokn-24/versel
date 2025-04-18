@@ -2,14 +2,13 @@ import { S3 } from "aws-sdk";
 import fs from "fs";
 import path from "path";
 import mime from "mime-types";
-import dotenv from 'dotenv'
-dotenv.config()
+import dotenv from "dotenv";
+dotenv.config();
 
 const s3 = new S3({
   accessKeyId: process.env.CLOUDFLARE_KEY,
-  secretAccessKey:
-    process.env.CLOUDFLARE_SECRET,
-  endpoint: process.env.CLOUDFLARE_END_POINT ,
+  secretAccessKey: process.env.CLOUDFLARE_SECRET,
+  endpoint: process.env.CLOUDFLARE_END_POINT,
 });
 
 export const uploadFile = async (fileName: string, localFilePath: string) => {
@@ -26,14 +25,21 @@ export const uploadFile = async (fileName: string, localFilePath: string) => {
   console.log(res);
 };
 
+const shouldIgnore = (filePath: string) => {
+  const parts = filePath.split(path.sep);
+  return parts.includes(".git");
+};
 export const uploadDirectory = async (
   localDirPath: string,
   bucketPath: string = ""
 ) => {
   const files = fs.readdirSync(localDirPath);
-
+  console.log("localDirPath", localDirPath);
   for (const file of files) {
     const fullLocalPath = path.join(localDirPath, file);
+
+    if (shouldIgnore(fullLocalPath)) continue;
+
     const stats = fs.statSync(fullLocalPath);
 
     if (stats.isFile()) {

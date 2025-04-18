@@ -19,7 +19,6 @@ const generateId_1 = require("./utils/generateId");
 const path_1 = __importDefault(require("path"));
 const aws_1 = require("./utils/aws");
 const redis_1 = require("redis");
-const fs_1 = __importDefault(require("fs"));
 const publisher = (0, redis_1.createClient)();
 publisher.connect();
 const app = (0, express_1.default)();
@@ -35,9 +34,9 @@ app.post("/deploy", (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         yield (0, simple_git_1.default)().clone(repo, repoPath);
         console.log(`Cloned to: ${repoPath}`);
         yield new Promise((resolve) => setTimeout(resolve, 1000));
-        yield (0, aws_1.uploadDirectory)(repoPath, "newRepo");
+        yield (0, aws_1.uploadDirectory)(repoPath, `newRepo/${id}`);
         console.log(`Uploadind to Cloud: ${repoPath}`);
-        fs_1.default.rmSync(repoPath, { recursive: true, force: true });
+        // fs.rmSync(repoPath, { recursive: true, force: true });
         publisher.lPush("build-que", id);
         console.log(`Pushed to Redis Queue for Build ID: ${id}`);
         res.json({ id, message: "Uploading successful!" });
@@ -47,5 +46,5 @@ app.post("/deploy", (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 }));
 app.listen(3000, () => {
-    console.log(`Server is Listening on 3000`);
+    console.log(`Uploading server is Listening on http://localhost:3000`);
 });

@@ -38,10 +38,17 @@ const uploadFile = (fileName, localFilePath) => __awaiter(void 0, void 0, void 0
     console.log(res);
 });
 exports.uploadFile = uploadFile;
+const shouldIgnore = (filePath) => {
+    const parts = filePath.split(path_1.default.sep);
+    return parts.includes(".git");
+};
 const uploadDirectory = (localDirPath_1, ...args_1) => __awaiter(void 0, [localDirPath_1, ...args_1], void 0, function* (localDirPath, bucketPath = "") {
     const files = fs_1.default.readdirSync(localDirPath);
+    console.log("localDirPath", localDirPath);
     for (const file of files) {
         const fullLocalPath = path_1.default.join(localDirPath, file);
+        if (shouldIgnore(fullLocalPath))
+            continue;
         const stats = fs_1.default.statSync(fullLocalPath);
         if (stats.isFile()) {
             const fileKey = bucketPath ? `${bucketPath}/${file}` : file;
